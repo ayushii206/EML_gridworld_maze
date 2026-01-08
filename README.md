@@ -172,8 +172,17 @@ To interact manually:
 swipl  
 ```
 ```
-?- consult('tests/run_tests.pl').
+?- consult('src/kb/gridworld_facts.pl').
+?- consult('src/kb/cells.pl').
+?- consult('src/rules/moves.pl').
+?- consult('src/rules/distance.pl').
+?- consult('src/rules/candidate.pl').
+?- consult('src/rules/decision.pl').
+?- consult('src/explain/explain.pl').
+?- explain((0,0)).
 ```
+
+After loading all the files we can try different testing methods as mentioned above.
 
 ---
 
