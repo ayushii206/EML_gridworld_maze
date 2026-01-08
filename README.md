@@ -37,6 +37,7 @@ The agent always selects the action that reduces the Manhattan distance to the g
 
 EML_gridworld_maze/
 ├── src/
+
 │   ├── kb/
 │   │   ├── gridworld_facts.pl
 │   │   └── cells.pl
