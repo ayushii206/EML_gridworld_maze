@@ -33,31 +33,6 @@ The agent always selects the action that reduces the Manhattan distance to the g
 
 ---
 
-## Project Structure
-
-EML_gridworld_maze/
-├── src/
-
-│   ├── kb/
-│   │   ├── gridworld_facts.pl
-│   │   └── cells.pl
-│   ├── rules/
-│   │   ├── moves.pl
-│   │   ├── distance.pl
-│   │   ├── candidate.pl
-│   │   └── decision.pl
-│   └── explain/
-│       ├── explain.pl
-│       └── verify.pl
-├── examples/
-│   ├── pos_examples.pl
-│   └── neg_examples.pl
-├── tests/
-│   └── run_tests.pl
-└── README.md
-
----
-
 ## File Explanation
 
 1. gridworld_facts.pl: Defines grid size, start position, goal position, and obstacle locations.
