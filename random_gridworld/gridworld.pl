@@ -1,5 +1,5 @@
 /* =========================================================
-   Explainable Gridworld Agent with Visualization using ASCII
+   Explainable Gridworld Agent with Visualization (ASCII)
    ========================================================= */
 
 :- dynamic goal/1.
@@ -156,6 +156,10 @@ draw_cell(Pos,Agent,Visited) :-
 
 solve :-
     init_world,
+    solve_current_world.
+
+% Runs the agent on the currently defined world
+solve_current_world :-
     start(S),
     distance_to_goal(S,D),
     solve_step(S,[S],D).
@@ -181,14 +185,14 @@ what_if_remove_obstacle(Cell) :-
     obstacle(Cell),
     retract(obstacle(Cell)),
     writeln("Counterfactual: obstacle removed."),
-    solve,
+    solve_current_world,
     assert(obstacle(Cell)).
 
 what_if_add_obstacle(Cell) :-
     free(Cell),
     assert(obstacle(Cell)),
     writeln("Counterfactual: obstacle added."),
-    solve,
+    solve_current_world,
     retract(obstacle(Cell)).
 
 what_if_change_goal(NewGoal) :-
@@ -196,7 +200,7 @@ what_if_change_goal(NewGoal) :-
     retract(goal(Old)),
     assert(goal(NewGoal)),
     writeln("Counterfactual: goal changed."),
-    solve,
+    solve_current_world,
     retract(goal(NewGoal)),
     assert(goal(Old)).
 
@@ -205,6 +209,6 @@ what_if_start(NewStart) :-
     retract(start(Old)),
     assert(start(NewStart)),
     writeln("Counterfactual: start changed."),
-    solve,
+    solve_current_world,
     retract(start(NewStart)),
     assert(start(Old)).
