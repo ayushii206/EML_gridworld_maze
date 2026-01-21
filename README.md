@@ -57,6 +57,8 @@ The agent always selects the action that reduces the Manhattan distance to the g
 
 11. run_tests.pl: Loads all files and runs automated verification tests.
 
+12. random_gridworld/gridworld.pl: This is a all content file to generate random obstacles and random goal positions along with a visualization element to see the path the agent takes. Moreover you can also provide counterfactual statements for the agent the path it takes or can take. 
+
 ---
 
 ## Explainability
@@ -183,6 +185,26 @@ swipl
 ```
 
 After loading all the files we can try different testing methods as mentioned above.
+
+---
+
+## How to run random gridworld:
+
+Go to the `/random_gridworld` directory from the root directory. And use the following commands
+```
+swipl -s gridworld.pl
+```
+```
+?- solve.
+```
+The agent will give a reason along with a visualization of every move it makes to reach the goal position. You can also use the following counterfactual questions to the agent like:
+```
+?- what_if_remove_obstacle((Cell)).
+?- what_if_add_obstacle((Cell)).
+?- what_if_change_goal((NewGoal)).
+?- what_if_start((NewStart)).
+```
+The cells are defined as `(column, row)`
 
 ---
 
