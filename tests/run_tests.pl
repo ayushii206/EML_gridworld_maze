@@ -1,15 +1,24 @@
-:- initialization(run).
+:- consult('../src/rules/explain').
+:- consult('../examples/pos_examples').
+:- consult('../examples/neg_examples').
 
-run :-
-    consult('src/kb/gridworld_facts.pl'),
-    consult('src/kb/cells.pl'),
-    consult('src/rules/moves.pl'),
-    consult('src/rules/distance.pl'),
-    consult('src/rules/candidate.pl'),
-    consult('src/rules/decision.pl'),
-    consult('src/explain/explain.pl'),
-    consult('src/explain/verify.pl'),
-    consult('examples/pos_examples.pl'),
-    consult('examples/neg_examples.pl'),
-    verify_all,
-    halt.
+run_pos :-
+    forall(
+        pos_action(Pos, Act),
+        ( best_action(Pos, Act)
+        -> format('OK positive ~w -> ~w~n',[Pos,Act])
+        ;  format('FAIL positive ~w -> ~w~n',[Pos,Act])
+        )
+    ).
+
+run_neg :-
+    forall(
+        neg_action(Pos, Act),
+        ( best_action(Pos, Act)
+        -> format('FAIL negative ~w -> ~w~n',[Pos,Act])
+        ;  format('OK negative ~w not chosen at ~w~n',[Act,Pos])
+        )
+    ).
+
+:- run_pos.
+:- run_neg.

@@ -1,11 +1,5 @@
-best_move(Pos, Act) :-
-    findall(D-Action, candidate(Pos,Action,_,D), L),
-    keysort(L, [_-Act|_]).
+:- consult(candidate).
 
-solve(Pos, []) :-
-    goal(Pos).
-
-solve(Pos, [A|R]) :-
-    best_move(Pos, A),
-    move(Pos, A, New),
-    solve(New, R).
+best_action(Pos, BestAction) :-
+    findall(D-Act, candidate_action(Pos, Act, D), List),
+    sort(List, [_-BestAction | _]).
