@@ -1,5 +1,7 @@
 # Rule-Based Navigation in a Gridworld using Prolog 
+
 **Winter Semester 2025**
+
 **Course: Explainable Machine Learning** 
 
 ---
