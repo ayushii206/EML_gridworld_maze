@@ -113,6 +113,10 @@ OK positive 8,5 -> up
 swipl  
 ```
 ```
+?- consult('load_all_files.pl').
+```
+*OR (Individually)*
+```
 ?- consult('src/kb/gridworld_facts.pl').
 ?- consult('src/rules/candidate.pl').
 ?- consult('src/rules/cells.pl').
