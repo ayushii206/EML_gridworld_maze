@@ -35,9 +35,6 @@ improving_move((4,2), left).
 improving_move((4,2), up).
 improving_move((4,3), left).
 improving_move((4,3), up).
-improving_move((4,4), up).
-improving_move((4,5), left).
-improving_move((4,5), up).
 improving_move((4,6), up).
 improving_move((4,7), left).
 improving_move((4,7), up).
@@ -51,8 +48,6 @@ improving_move((5,6), up).
 improving_move((5,7), left).
 improving_move((6,3), up).
 improving_move((6,4), left).
-improving_move((6,4), up).
-improving_move((6,5), up).
 improving_move((6,6), left).
 improving_move((6,6), up).
 improving_move((6,7), left).
@@ -61,7 +56,6 @@ improving_move((7,0), up).
 improving_move((7,1), up).
 improving_move((7,2), up).
 improving_move((7,3), left).
-improving_move((7,5), left).
 improving_move((7,7), left).
 improving_move((7,7), up).
 improving_move((8,0), left).

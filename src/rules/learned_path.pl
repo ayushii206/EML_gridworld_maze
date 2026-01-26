@@ -2,7 +2,7 @@
 :- consult('learned_decision.pl').    
 :- consult('moves.pl').               
 :- consult('cells.pl').
-:- consult('Distance.pl').            
+:- consult('distance.pl').            
 :- consult('../kb/gridworld_facts.pl').
 
 
