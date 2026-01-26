@@ -7,7 +7,7 @@ valid_path(Start, Goal, Path) :-
 valid_path(Pos, Pos, _, []) :-
     goal(Pos).
 
-valid_path(Pos, Goal, Visited, [Action | Rest]) :-
+valid_path(Pos, Goal, Visited, [Action|Rest]) :-
     valid_move(Pos, Action, NewPos),
     \+ member(NewPos, Visited),
-    valid_path(NewPos, Goal, [NewPos | Visited], Rest).
+    valid_path(NewPos, Goal, [NewPos|Visited], Rest).

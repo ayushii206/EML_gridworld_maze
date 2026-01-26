@@ -1,4 +1,4 @@
-:- consult('cells.pl').
+:- consult(cells).
 
 move((X,Y), right, (X1,Y)) :- X1 is X+1.
 move((X,Y), left,  (X1,Y)) :- X1 is X-1.

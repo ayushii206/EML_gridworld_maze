@@ -8,51 +8,20 @@
 
 ## Overview
 
-This project implements a learning-based decision-making agent in a 2D Gridworld using:
+This project implements an explainable decision-making agent in a 9x9 Gridworld using pure logic programming in SWI-Prolog.
 
-- Inductive Logic Programming (ILP)
-- Popper learning system
-- Symbolic reasoning in SWI-Prolog
-
-The agent learns how to choose actions directly from:
-
-- background knowledge
-- logical facts
-- positive examples
-- negative example
-
-No rules for selecting actions are manually defined.
-
-
-Instead, the decision rule is automatically induced by Popper in the form of an interpretable Prolog program.
+The system does NOT use machine learning, reinforcement learning, or training.
+All decisions are derived from symbolic rules and verified using positive and negative examples, following principles of Explainable AI (XAI) and Inductive Logic Programming (ILP).
 
 ---
 
-## Learning Goal
-
-The system learns the predicate:
-
-```
-best_action(Position, Action)
-```
-
-which determines which movement action should be chosen at a given grid position.
-
-The objective of learning is to select actions that:
-
-- keep the agent inside the grid
-- avoid obstacle cells
-- move the agent closer to the goal
-
----
-
-## Gridworld Environment
+## Gridworld Description
 
 Grid size: 9 x 9  
 Coordinates: (X,Y) where (0,0) is bottom-left  
 
-Start position: (0,0)  
-Goal position: (3,8)  
+Start position: (1,1)  
+Goal position: (8,7)  
 Obstacles: Statically defined in the knowledge base
 
 Allowed actions:
@@ -60,6 +29,12 @@ Allowed actions:
 - down
 - left
 - right
+
+The agent always selects the action that:
+
+- remain inside the grid
+- avoid obstacle cells
+- reduce Manhattan distance to the goal
 
 ---
 
@@ -69,13 +44,11 @@ Allowed actions:
 
 1. gridworld_facts.pl: Defines grid size, start position, goal position, and obstacle locations.
 
-### Environment Rules
+### Navigation Rules
 
 1. cells.pl: Validates grid boundaries and free cells.
-2. moves.pl: Defines valid movement transitions.
+2. moves.pl: Defines state transitions for actions.
 3. distance.pl: Computes Manhattan distance to the goal.
-
-### Improving Move Predicate 
 4. candidate.pl: Generates all valid actions from a position.
 5. decision.pl: Selects the best action based on minimum distance.
 6. path.pl: Generates a greedy path from start to goal.

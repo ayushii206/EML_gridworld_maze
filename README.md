@@ -8,201 +8,179 @@
 
 ## Overview
 
-This project implements an explainable decision-making agent in a 9x9 Gridworld using pure logic programming in SWI-Prolog.
+This project presents an explainable Gridworld navigation system in which the agent’s decision-making policy is learned automatically using Inductive Logic Programming (ILP).
 
-The system does NOT use machine learning, reinforcement learning, or training.
-All decisions are derived from symbolic rules and verified using positive and negative examples, following principles of Explainable AI (XAI) and Inductive Logic Programming (ILP).
+Instead of manually defining navigation rules, the system employs the Popper ILP framework to induce a symbolic action-selection rule from examples and background knowledge.
+
+The learned rule is subsequently integrated into a Prolog-based planner to generate paths from a start position to a goal position while avoiding obstacles.
 
 ---
 
-## Gridworld Description
+## Problem Statement
 
-Grid size: 9 x 9  
-Coordinates: (X,Y) where (0,0) is bottom-left  
+Given a two-dimensional Gridworld environment, the agent must decide:
+```
+Which action should be taken at each position to move toward the goal?
+```
 
-Start position: (1,1)  
-Goal position: (8,7)  
-Obstacles: Statically defined in the knowledge base
+The decision must satisfy the following constraints:
+
+- movements must remain inside the grid
+- obstacle cells must be avoided
+- the action should move the agent closer to the goal
+
+The objective is to learn this decision rule automatically, rather than encoding it manually.
+
+---
+
+## Gridworld Environment
+
+- Grid size: 9 × 9
+- Coordinates: (X, Y)
+- Start position: (0, 0)
+- Goal position: (3, 8)
+- Obstacles: predefined static cells
 
 Allowed actions:
+
 - up
 - down
 - left
 - right
 
-The agent always selects the action that:
+Distance to the goal is measured using Manhattan distance.
 
-- remain inside the grid
-- avoid obstacle cells
-- reduce Manhattan distance to the goal
+--- 
+
+## Learning Approach
+
+### Inductive Logic Programming (ILP)
+
+Inductive Logic Programming (ILP) learns logical rules from examples using background knowledge.
+
+In this project, ILP is used to learn the predicate:
+```
+best_action(Position, Action)
+```
+which represents the agent’s navigation policy.
+
+### Use of Popper
+
+Popper is an ILP system that searches for Prolog hypotheses consistent with background knowledge, positive examples, negative examples, and hypothesis constraints (bias).
+
+Popper produces human-readable logical programs, making it especially suitable for Explainable AI.
+
+### Learning Inputs
+
+The learning process consists of:
+
+1. Background knowledge
+- Grid layout
+- Goal position
+- Precomputed valid improving actions
+
+2. Positive examples
+- Actions that should be selected in certain states
+
+3. Negative examples
+- Actions that must not be selected
+
+4. Bias constraints
+- Restrict hypothesis size and allowed predicates to ensure interpretability
+
+### Learned Hypothesis
+
+After training, Popper learns the following rule:
+
+```
+best_action(Position, Action) :-
+    improving_move(Position, Action).
+```
+
+This rule is automatically induced and not manually written.
+
+It expresses that a correct action is one that reduces the Manhattan distance to the goal.
 
 ---
 
-## Project Structure
 
-### Knowledge Base
+## Running the Project
 
-1. gridworld_facts.pl: Defines grid size, start position, goal position, and obstacle locations.
+### System Requirements
 
-### Navigation Rules
-
-1. cells.pl: Validates grid boundaries and free cells.
-2. moves.pl: Defines state transitions for actions.
-3. distance.pl: Computes Manhattan distance to the goal.
-4. candidate.pl: Generates all valid actions from a position.
-5. decision.pl: Selects the best action based on minimum distance.
-6. path.pl: Generates a greedy path from start to goal.
-7. valid_path.pl: Generates any valid path using loop-safe search.
-8. explain.pl: Produces human-readable explanations for action choices.
-
-### Verification
-
-1. pos_examples.pl: Defines actions that must be selected.
-2. neg_examples.pl: Defines actions that must not be selected.
-3. run_tests.pl: Automatically validates all examples.
-
-### Random Gridworld
-
-random_gridworld/gridworld.pl: This is a all content file to generate random obstacles and random goal positions along with a visualization element to see the path the agent takes. Moreover you can also provide counterfactual statements for the agent the path it takes or can take. 
-
----
-
-## Explainability Example
-
-The system explains its decisions by showing:
-- current position
-- chosen action
-- distance before the move
-- distance after the move
-
+- SWI-Prolog (version ≥ 9)
+- Python (for Popper)
+- Popper ILP installed and accessible via:
 ```
-?- explain_action((1,1), Action, Explanation).
+popper-ilp
 ```
 
-Example Output: 
+### Step 1: Generate Background facts
+
+From the project root directory:
+
 ```
-Action = right,
-Explanation = [
-    from_distance(13),
-    to_distance(12),
-    reason('reduces distance to goal')
-].
+swipl -q -s learning/gridworld_best_action/gen_improving_facts.pl \
+     -g write_improving_facts -t halt \
+     > learning/gridworld_best_action/improving_facts.pl
 ```
 
-This demonstrates transparent and interpretable decision-making.
+This step computes all valid actions that improve distance to the goal and converts them into ground facts for learning.
 
----
+### Step 2: Run Popper
 
-## Testing 
+```
+popper-ilp learning/gridworld_best_action
+```
 
-### Automated Testing
+Popper searches for a hypothesis and automatically produces the learned program.
 
-To run all positive and negative examples: 
+Example output:
+```
+best_action(V0,V1):- improving_move(V0,V1)
+```
+
+The learned hypothesis is stored in:
+```
+learned/best_action.pl
+```
+
+### Step 3: Run the learned planner
+
+```
+swipl
+```
+
+Load the system:
+```
+?- consult('src/kb/gridworld_facts.pl').
+?- consult('src/rules/learned_path.pl').
+```
+
+Query the learned path:
+```
+?- set_prolog_flag(answer_write_options, [max_depth(1000)]).
+?- start(S), goal(G), learned_path(S, G, Path).
+```
+
+A valid navigation path from start to goal will be returned.
+
+### Step 4: Run tests
 
 ```
 swipl -q -s tests/run_tests.pl
 ```
-Example output:
-```
-OK positive 6,4 -> right
-FAIL positive 7,5 -> right
-OK positive 8,5 -> up
-```
-
-### Manual Testing
-
-```
-swipl  
-```
-```
-?- consult('load_all_files.pl').
-```
-*OR (Individually)*
-```
-?- consult('src/kb/gridworld_facts.pl').
-?- consult('src/rules/candidate.pl').
-?- consult('src/rules/cells.pl').
-?- consult('src/rules/decision.pl').
-?- consult('src/rules/distance.pl').
-?- consult('src/rules/explain.pl').
-?- consult('src/rules/moves.pl').
-?- consult('src/rules/path.pl').
-?- consult('src/rules/valid_path.pl').
-```
-
-To generate and print the path from start to goal:
-
-```
-?- set_prolog_flag(answer_write_options, [max_depth(1000)]).
-```
-
-```
-?- start(S), goal(G), path(S, G, Actions), writeln(Actions).
-```
-
-### Positive and Negative Example testing
-
-To verify the correctness of the navigation logic, the project uses **positive and negative examples**.  
-These examples define *expected agent behavior* and are used only for **verification**, not for learning or training.
-
-1. Positive examples: examples/pos_examples.pl
-
-Example: 
-```
-pos_action((5,3), up).
-```
-This means that when the agent is at position (5,3), the correct action should be up.
-
-So during testing the code checks whether:
-
-```
-?- best_action((5,3), up).
-```
-
-If it returns *true*, the positive example passes.
-
-2. Negative examples: examples/neg_examples.pl
-
-Example: 
-```
-neg_action((6,3), up).
-```
-This means that when the agent is at position (6,3), the action up must not be selected.
-
-So during testing the code checks whether:
-
-```
-?- best_action((6,3), up)
-```
-
-If it returns *false*, the negative example passes.
+This evaluates the learned rule against independent positive and negative test cases.
 
 ---
 
-## How to run random gridworld:
+## Key Contributions
 
-Go to the `/random_gridworld` directory from the root directory. And use the following commands
-```
-swipl -s gridworld.pl
-```
-```
-?- solve.
-```
-The agent will give a reason along with a visualization of every move it makes to reach the goal position. You can also use the following counterfactual questions to the agent like:
-```
-?- what_if_remove_obstacle((Cell)).
-?- what_if_add_obstacle((Cell)).
-?- what_if_change_goal((NewGoal)).
-?- what_if_start((NewStart)).
-```
-The cells are defined as `(column, row)`
-
----
-
-## Key Idea
-
-This project demonstrates Explainable AI using symbolic reasoning.
-Instead of learning from data, the system uses logic rules and verification through examples to make and explain decisions.
+- Demonstrates true machine learning using ILP
+- Avoids manually defined decision rules
+- Integrates learning with logical planning
+- Produces interpretable symbolic policies
+- Aligns with Explainable AI principles
 
 ---
 

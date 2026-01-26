@@ -1,18 +1,6 @@
-:- consult('../src/rules/learned_decision').
-
-pos_action((1,0), right).
-pos_action((2,0), right).
-pos_action((3,1), right).
-pos_action((4,2), right).
-pos_action((5,3), up).
-pos_action((6,4), right).
-pos_action((8,5), up).
-
-neg_action((0,0), left).
-neg_action((0,0), down).
-neg_action((2,1), up).
-neg_action((6,3), up).
-neg_action((8,5), down).
+:- consult('../src/rules/explain').
+:- consult('../examples/pos_examples').
+:- consult('../examples/neg_examples').
 
 run_pos :-
     forall(
